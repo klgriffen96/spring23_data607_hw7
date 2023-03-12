@@ -1,0 +1,144 @@
+---
+title: "Spring 2023 Data 607 Homework 7"
+author: "Kayleah Griffen"
+date: "3/12/2023"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+In this assignment the objective was to pick three of my favorite books on one of my favorite subjects, where at least one of the books should have more than one author. For each book, I needed to document the title, author(s), and two or three other attributes that I found interesting. Then, take the information that I had selected about these three books, and separately create three files which store the book’s information in HTML (using an html table), XML, and JSON formats (e.g. “books.html”, “books.xml”, and “books.json”). Lastly, write R code, using packages of my choice, to load the information from each of the three sources into separate R data frames. Finally, note if the three data frames are identical or not. 
+
+To begin this assignment - I chose three books relevant to data science ethics that I found interesting and I included the title, author(s), as well as a link for where the book can be accessed or purchased and a link to a relevant talk on youtube about the book. Below is the information for each book.
+
+Title: *Data Feminism*
+
+Author(s): Catherine D'Ignazio and Lauren F. Klein
+
+Link to book: https://data-feminism.mitpress.mit.edu/
+
+Link to relevant  youtube talk: https://www.youtube.com/watch?v=guIxU_hK4aY&ab_channel=LSE
+
+
+
+Title: *Artificial Unintelligence*
+
+Author:  Meredith Broussard
+
+Link to book: https://mitpress.mit.edu/9780262537018/artificial-unintelligence/
+
+Link to relevant youtube talk: https://www.youtube.com/watch?v=3PIpCD_hO-g&ab_channel=Triangulation
+
+
+
+Title: *Algorithms of Oppression*
+
+Author:  Safiya Umoja Noble
+
+Link to book: https://nyupress.org/9781479837243/algorithms-of-oppression/
+
+Link to relevant youtube talk: https://www.youtube.com/watch?v=UXuJ8yQf6dI&ab_channel=TEDxTalks
+
+## Processing
+
+To start, I will load the required packages. The `rvest` library assists in getting data from a html file into R. The `jsonlite` library assists in getting data from a json file into R. The `XML` and `methods` libraries assist in getting data from an xml file into R.
+
+```{r, warning=FALSE, message=FALSE}
+library(kableExtra)
+library(rvest)
+library(tidyverse)
+library("XML")
+library("methods")
+library(jsonlite)
+library(httr)
+```
+
+
+### HTML file
+
+Use rvest functions to read the html table into an r dataframe.
+
+```{r}
+github_link <- "https://raw.githubusercontent.com/klgriffen96/spring23_data607_hw7/main/books.html"
+temp_file <- tempfile(fileext = ".html")
+req <- GET(github_link, 
+          # write result to disk
+          write_disk(path = temp_file))
+
+html <- read_html(temp_file)
+
+df_html <- html |> 
+  html_element("table") |> 
+  html_table()
+df_html <- df_html |>
+       rename("title"= "Name", 
+              "author_s" = "Author(s)- (and separated)",
+              "book_link" = "Book Link",
+              "youtube_link" = "Youtube Link")
+
+kable(head(df_html))  |>
+  kable_styling("striped")
+```
+
+### JSON file
+
+```{r}
+github_link <- "https://raw.githubusercontent.com/klgriffen96/spring23_data607_hw7/main/books.json"
+temp_file <- tempfile(fileext = ".json")
+req <- GET(github_link, 
+          # write result to disk
+          write_disk(path = temp_file))
+
+json <- fromJSON(txt = temp_file) 
+
+df <- tibble(results = json$`Kayleahs Books`) 
+
+df_json <- df |> 
+  unnest_wider(results) |> as.data.frame()
+
+df_json <- df_json |>
+       rename("title"= "Name", 
+              "author_s" = "Author(s)- (and separated)",
+              "book_link" = "Book Link",
+              "youtube_link" = "Youtube Link")
+
+df_json$id <- as.integer(df_json$id)
+  
+kable(head(df_json))  |>
+  kable_styling("striped")
+```
+
+### XML file
+
+```{r}
+github_link <- "https://raw.githubusercontent.com/klgriffen96/spring23_data607_hw7/main/books.xml"
+temp_file <- tempfile(fileext = ".xml")
+req <- GET(github_link, 
+          # write result to disk
+          write_disk(path = temp_file))
+
+df_xml <- xmlToDataFrame(temp_file)
+df_xml <- df_xml |>
+       rename("id" = "ID",
+              "title"= "TITLE", 
+              "author_s" = "AUTHOR_S",
+              "book_link" = "BOOK_LINK",
+              "youtube_link" = "YOUTUBE")
+
+df_xml$id <- as.integer(df_xml$id)
+
+kable(head(df_xml))  |>
+  kable_styling("striped")
+```
+
+## Conclusion
+
+The objective of this assignment was met - a books.html, books.json and books.xml file was created with the title, author(s), purchase or read link and a link to a youtube talk. The dataframes created are the same, regardless of the starting file format.
+
+To build on this current work, I would consider handling the author(s) list differently. Currently if I wanted to separate the authors into individual author elements I could use a regex and separate on the word "and" because that is how I stored the multiple authors list. Instead if I wanted to I could have adapted the html, xml, and json files to have the authors as more of a list format and saved the list as an element of the dataframe.
