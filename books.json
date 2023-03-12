@@ -1,0 +1,29 @@
+{
+   "Kayleahs Books": [
+	
+      {
+         "id": 1,
+         "Name": "Data Feminism",
+         "Author(s)- (and separated)": "Catherine D'Ignazio and Lauren F. Klein",
+         "Book Link": "https://data-feminism.mitpress.mit.edu/",
+		 "Youtube Link" : "https://www.youtube.com/watch?v=guIxU_hK4aY&ab_channel=LSE"
+      },
+	
+      {
+         "id": 2,
+         "Name": "Artificial Unintelligence",
+         "Author(s)- (and separated)": "Meredith Broussard",
+         "Book Link": "https://mitpress.mit.edu/9780262537018/artificial-unintelligence//",
+		 "Youtube Link" : "https://www.youtube.com/watch?v=3PIpCD_hO-g&ab_channel=Triangulation"
+      },
+	  
+	  {
+         "id": 3,
+         "Name": "Algorithms of Oppression",
+         "Author(s)- (and separated)": "Safiya Umoja Noble",
+         "Book Link": "https://nyupress.org/9781479837243/algorithms-of-oppression/",
+		 "Youtube Link" : "https://www.youtube.com/watch?v=UXuJ8yQf6dI&ab_channel=TEDxTalks"
+      }
+	  
+   ]
+}
